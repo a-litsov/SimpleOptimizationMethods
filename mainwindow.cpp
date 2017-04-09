@@ -6,6 +6,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->customPlot->setMinimumWidth(this->width());
+    ui->customPlot->setMinimumHeight(this->height()-100);
+
 }
 
 MainWindow::~MainWindow()
