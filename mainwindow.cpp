@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QVector<double> args;
     QVector<QPair<double, double>> iterations;
-    double min = optObj.bruteforceMethod(iterations, start, end, 10000000, 0.0005);
+    QPair<double, double> min = optObj.bruteforceMethod(iterations, start, end, 10000000, 0.0005);
 
     for (int i = 0; i < iterations.size(); i++)
     {

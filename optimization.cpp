@@ -32,28 +32,39 @@ void Optimization::setParameters(double alpha, double betta, double gamma, doubl
     this->delta = delta;
 }
 
-void insertInOrder(double value, QVector<double>& array)
+int insertInOrder(double value, QVector<double>& array)
 {
     QVector<double>::iterator it = qLowerBound(array.begin(), array.end(), value); // find proper position in descending order
-    array.insert(it, value); // insert before iterator it
+    QVector<double>::iterator valueIt = array.insert(it, value); // insert before iterator it
+    return valueIt - array.begin(); // return our element's index
 }
 
-double Optimization::bruteforceMethod(QVector<QPair<double, double>>& iterations, double start, double end, int maxIterCount, double eps)
+void insertAtPos(double value, int pos, QVector<double>& array)
 {
+    if( array.begin()+pos > array.end() || array.begin()+pos < array.begin())
+        int a= 7;
+    array.insert(array.begin()+pos, value);
+}
+
+QVector<double>::iterator insertToR(double before, double value, double after, int pos, QVector<double>& array)
+{
+    QVector<double>::iterator valIt = array.erase(array.begin() + pos - 1);
+    valIt = array.insert(valIt, after - value);
+    return array.insert(valIt, value - before);
+}
+
+QPair<double, double> Optimization::bruteforceMethod(QVector<QPair<double, double>>& iterations, double start, double end, int maxIterCount, double eps)
+{
+    double globalMin = 10000000;
     int iter = 0; double currentError = 1000000;
     QVector<double> x; QVector<double> y;
     x.push_back(start); x.push_back(end);
     y.push_back(calculateFunc(start)); y.push_back(calculateFunc(end));
     QVector<double> R;
+    R.push_back(fabs(end - start));
     double newPoint, newValue;
     while (iter < maxIterCount && currentError > eps)
     {
-        y.clear();
-        for (int i = 0; i < x.size(); i++)
-            y.push_back(calculateFunc(x[i]));
-        R.clear();
-        for (int i = 0; i < x.size()-1; i++)
-            R.push_back(fabs(x[i+1] - x[i]));
         int maxIndex = 0;
         double maxValue = 0;
         for (int i = 0; i < R.size(); i++)
@@ -63,13 +74,18 @@ double Optimization::bruteforceMethod(QVector<QPair<double, double>>& iterations
                 maxIndex = i;
             }
         currentError = fabs(y[maxIndex+1]-y[maxIndex]);
+        // Поправить
+//        if (currentError < eps)
+//            break;
         newPoint = 0.5*(x[maxIndex]+x[maxIndex+1]);
         newValue = calculateFunc(newPoint);
-        insertInOrder(newPoint, x);
-//        insertInOrder(newValue, y);
+        if (newValue < globalMin)
+            globalMin = newValue;
+        int pos = insertInOrder(newPoint, x);
+        insertAtPos(newValue, pos, y);
+        QVector<double>::iterator tmpIt = insertToR(x[pos-1], newPoint, x[pos+1], pos, R);
         iterations.push_back(QPair<double, double>(newPoint, newValue));
         iter++;
     }
-    y.push_back(calculateFunc(newPoint));
-    return y[y.size()-1];
+    return QPair<double, double>(newPoint, y[y.size()-1]);
 }
