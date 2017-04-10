@@ -8,9 +8,9 @@ const double INF = 1000000;
 
 double Optimization::calculateFunc(double x)  const
 {
-//    return alpha * sin(betta*x) + gamma * cos(betta*x);
+    return params[0] * sin(params[1]*x) + params[2] * cos(params[3]*x);
 //    return sin(x);
-    return x*x;
+//    return x*x;
 //    return cos(x) + sin(x);
 }
 
@@ -26,12 +26,10 @@ QVector<double> Optimization::getFuncData(QVector<double> &x, double start, doub
     return values;
 }
 
-void Optimization::setParameters(double alpha, double betta, double gamma, double delta)
+void Optimization::setParameters(double params[4])
 {
-    this->alpha = alpha;
-    this->betta = betta;
-    this->gamma = gamma;
-    this->delta = delta;
+    for (int i = 0; i < 4; i++)
+        this->params[i] = params[i];
 }
 
 int insertInOrder(double value, QVector<double>& array)

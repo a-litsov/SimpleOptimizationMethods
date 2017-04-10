@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1221</width>
+    <width>1366</width>
     <height>751</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Метод полного сканирования, Пиявского и Стронгина(АГП)</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QCustomPlot" name="customPlot" native="true">
@@ -24,13 +24,396 @@
      </rect>
     </property>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>55</x>
+      <y>663</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>* sin(</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>135</x>
+      <y>663</y>
+      <width>41</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>* x) + </string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>302</x>
+      <y>663</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>* x)</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>217</x>
+      <y>663</y>
+      <width>41</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>* cos(</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="deltaEdit">
+    <property name="geometry">
+     <rect>
+      <x>258</x>
+      <y>661</y>
+      <width>41</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>458</x>
+      <y>663</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Конец:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>356</x>
+      <y>663</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Начало:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>1100</x>
+      <y>659</y>
+      <width>201</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Полного сканирования</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Пиявского</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Стронгина (АГП)</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>663</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Число итераций:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>663</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Погрешность:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>1050</x>
+      <y>663</y>
+      <width>51</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Метод:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>880</x>
+      <y>663</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>r:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="startButton">
+    <property name="geometry">
+     <rect>
+      <x>1300</x>
+      <y>661</y>
+      <width>61</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Старт!</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="drawButton">
+    <property name="geometry">
+     <rect>
+      <x>960</x>
+      <y>661</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Построить</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="alphaBox">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>659</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="decimals">
+     <number>7</number>
+    </property>
+    <property name="minimum">
+     <double>-999999.999998999992386</double>
+    </property>
+    <property name="maximum">
+     <double>999999.999998999992386</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="bettaBox">
+    <property name="geometry">
+     <rect>
+      <x>92</x>
+      <y>659</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="decimals">
+     <number>7</number>
+    </property>
+    <property name="minimum">
+     <double>-999999.999998999992386</double>
+    </property>
+    <property name="maximum">
+     <double>999999.999998999992386</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="gammaBox">
+    <property name="geometry">
+     <rect>
+      <x>172</x>
+      <y>659</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="decimals">
+     <number>7</number>
+    </property>
+    <property name="minimum">
+     <double>-999999.999998999992386</double>
+    </property>
+    <property name="maximum">
+     <double>999999.999998999992386</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="deltaBox">
+    <property name="geometry">
+     <rect>
+      <x>258</x>
+      <y>659</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="decimals">
+     <number>7</number>
+    </property>
+    <property name="minimum">
+     <double>-999999.999998999992386</double>
+    </property>
+    <property name="maximum">
+     <double>999999.999998999992386</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="startBox">
+    <property name="geometry">
+     <rect>
+      <x>411</x>
+      <y>659</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="decimals">
+     <number>7</number>
+    </property>
+    <property name="minimum">
+     <double>-999999.999998999992386</double>
+    </property>
+    <property name="maximum">
+     <double>999999.999998999992386</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="endBox">
+    <property name="geometry">
+     <rect>
+      <x>504</x>
+      <y>659</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="decimals">
+     <number>7</number>
+    </property>
+    <property name="minimum">
+     <double>-999999.999998999992386</double>
+    </property>
+    <property name="maximum">
+     <double>999999.999998999992386</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="errorBox">
+    <property name="geometry">
+     <rect>
+      <x>822</x>
+      <y>659</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="decimals">
+     <number>7</number>
+    </property>
+    <property name="minimum">
+     <double>-999999.999998999992386</double>
+    </property>
+    <property name="maximum">
+     <double>999999.999998999992386</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="rBox">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>659</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="decimals">
+     <number>7</number>
+    </property>
+    <property name="minimum">
+     <double>1.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>999999.999998999992386</double>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="itersBox">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>659</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="buttonSymbols">
+     <enum>QAbstractSpinBox::NoButtons</enum>
+    </property>
+    <property name="maximum">
+     <number>999999999</number>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1221</width>
+     <width>1366</width>
      <height>22</height>
     </rect>
    </property>

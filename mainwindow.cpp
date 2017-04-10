@@ -5,33 +5,46 @@
 
 #define customPlot ui->customPlot
 
+QVector<QCPItemLine*> lines;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setupUI();
 
-    Optimization optObj;
-    const int n = 150;
-    const double startX = -5, endX = 5, startY = -2, endY = 2;
-    const double eps = 0.01;
 
-    createGraph(optObj, n, eps, startX, endX, startY, endY);
-
-    const int iterCount = 10000000;
-    const double r = 2;
-    QVector<QPair<double, double>> iterations;
-//    QPair<double, double> min = optObj.bruteforceMethod(iterations, startX, endX, iterCount, eps);
-//    QPair<double, double> min = optObj.PiavskiiMethod(iterations, startX, endX, iterCount, eps, r);
-    QPair<double, double> min = optObj.StronginMethod(iterations, startX, endX, iterCount, eps, r);
-
-    showIterations(iterations, min, startY);
 }
 
-void MainWindow::createGraph(const Optimization& optObj, int n, double eps, double startX, double endX, double startY, double endY)
+void MainWindow::getData(double params[4], double& startX, double& endX, double& eps, double& iterCount, double& r, int& methodNum)
 {
+    getPlotData(params, startX, endX);
+    eps = ui->errorBox->value();
+    iterCount = ui->itersBox->value();
+    r = ui->rBox->value();
+    methodNum = ui->comboBox->currentIndex();
+}
+
+void MainWindow::getPlotData(double params[4], double& startX, double& endX)
+{
+    QDoubleSpinBox* boxes[] = {ui->alphaBox, ui->bettaBox, ui->gammaBox, ui->deltaBox};
+    for (int i = 0; i < 4; i++)
+        params[i] = boxes[i]->value();
+    startX = ui->startBox->value();
+    endX = ui->endBox->value();
+}
+
+void MainWindow::setupUI()
+{
+    QRect rec = QApplication::desktop()->screenGeometry();
+    this->setGeometry(rec);
+
     customPlot->setMinimumWidth(this->width());
-    customPlot->setMinimumHeight(this->height()-100);
+    customPlot->setMinimumHeight(this->height()-110);
+}
+
+void MainWindow::createGraph(const Optimization& optObj, int n, double startX, double endX, double startY, double endY)
+{
 
     QVector<double> x(n);
     QVector<double> y = optObj.getFuncData(x, startX, endX, n);
@@ -54,21 +67,33 @@ void MainWindow::createGraph(const Optimization& optObj, int n, double eps, doub
     customPlot->yAxis->setRange(startY, endY);
 
     // set ticks count
-    const int maxTicksCount = 50;
-    int ticksCountNeeded = (endX - startX) / eps;
+    const int maxTicksCount = 70;
 
-    customPlot->xAxis->ticker()->setTickCount(ticksCountNeeded <= maxTicksCount ? ticksCountNeeded : maxTicksCount);
+    customPlot->xAxis->ticker()->setTickCount(maxTicksCount);
+
     customPlot->xAxis->setTickLabelRotation(40);
+
+    // remove lines if some method already worked
+    for (int i = 0; i < lines.size(); i++)
+        if (customPlot->hasItem(lines[i]))
+            customPlot->removeItem(lines[i]);
 
     customPlot->replot();
 }
 
 void MainWindow::showIterations(const QVector<QPair<double, double>>& iterations, const QPair<double, double>& min, double startY)
 {
+    for (int i = 0; i < lines.size(); i++)
+    {
+        if (customPlot->hasItem(lines[i]))
+            customPlot->removeItem(lines[i]);
+    }
+    lines.clear();
     for (int i = 0; i < iterations.size(); i++)
     {
         drawLine(iterations[i], startY, i, iterations[i].first == min.first, false, false);
     }
+    customPlot->replot();
 }
 
 void MainWindow::drawLine(QPair<double, double> iteration, double startY, int iterNum, bool isFinal, bool showIter, bool showX)
@@ -84,12 +109,14 @@ void MainWindow::drawLine(QPair<double, double> iteration, double startY, int it
     min1->setPen(pen);
     min1->start->setCoords(iteration.first, startY);
     min1->end->setCoords(iteration.first, iteration.second);
+    lines.push_back(min1);
 
     QCPItemLine *min2 = new QCPItemLine(customPlot);
     min2->setPen(pen);
     const float shiftY = 0.1;
     min2->start->setCoords(iteration.first, iteration.second);
     min2->end->setCoords(iteration.first, iteration.second+shiftY);
+    lines.push_back(min2);
 
     if (showX)
     {
@@ -113,4 +140,44 @@ void MainWindow::drawLine(QPair<double, double> iteration, double startY, int it
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_startButton_clicked()
+{
+    Optimization optObj;
+    const double startY = -2, endY = 2;
+    double params[4], startX, endX, eps, iterCount, r;
+    int methodNum = 0;
+    getData(params, startX, endX, eps, iterCount, r, methodNum);
+    optObj.setParameters(params);
+    QVector<QPair<double, double>> iterations;
+    QPair<double, double> min;
+    switch(methodNum)
+    {
+    case 0:
+        min = optObj.bruteforceMethod(iterations, startX, endX, iterCount, eps);
+        break;
+    case 1:
+        min = optObj.PiavskiiMethod(iterations, startX, endX, iterCount, eps, r);
+        break;
+    case 2:
+        min = optObj.StronginMethod(iterations, startX, endX, iterCount, eps, r);
+        break;
+    }
+
+    ui->statusBar->showMessage(QString("Готово, точка глобального минимума: (" + QString::number(min.first) + ";" + QString::number(min.second)
+                                       + "), количество итераций: " + QString::number(iterations.size())));
+    showIterations(iterations, min, startY);
+}
+
+void MainWindow::on_drawButton_clicked()
+{
+    Optimization optObj;
+    const double startY = -2, endY = 2;
+    double params[4], startX, endX;
+    getPlotData(params, startX, endX);
+    optObj.setParameters(params);
+
+    const int n = 50 * fabs(endX - startX);
+    createGraph(optObj, n, startX, endX, startY, endY);
 }

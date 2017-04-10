@@ -5,7 +5,7 @@
 
 class Optimization
 {
-    double alpha, betta, gamma, delta;
+    double params[4];
     double getM(const QVector<double>& x, const double& r) const;
     double calculateRPiavskii(double after, double before, double m) const;
     QVector<double>::iterator insertToRPiavskii(double before, double value, double after, int pos, double m, QVector<double>& array) const;
@@ -14,7 +14,7 @@ class Optimization
 public:
     double calculateFunc(double x) const;
     QVector<double> getFuncData(QVector<double> &x, double start, double end, int n) const;
-    void setParameters(double alpha, double betta, double gamma, double delta);
+    void setParameters(double params[4]);
     QPair<double, double> bruteforceMethod(QVector<QPair<double, double>>& iterations,
                                            double start, double end, int maxIterCount, double eps) const;
     QPair<double, double> PiavskiiMethod(QVector<QPair<double, double>>& iterations,
