@@ -7,10 +7,11 @@ class Optimization
 {
     double alpha, betta, gamma, delta;
 public:
-    double calculateFunc(double x);
-    QVector<double> getFuncData(QVector<double> &x, double start, double end, int n);
+    double calculateFunc(double x) const;
+    QVector<double> getFuncData(QVector<double> &x, double start, double end, int n) const;
     void setParameters(double alpha, double betta, double gamma, double delta);
-    QPair<double, double> bruteforceMethod(QVector<QPair<double, double>>& iterations, double start, double end, int maxIterCount, double eps);
+    QPair<double, double> bruteforceMethod(QVector<QPair<double, double>>& iterations,
+                                           double start, double end, int maxIterCount, double eps) const;
 };
 
 #endif // OPTIMIZATION_H

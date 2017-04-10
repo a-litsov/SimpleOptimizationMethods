@@ -1,18 +1,19 @@
-#include "optimization.h"
 #include <QVector>
 #include <QtAlgorithms>
 #include <math.h>
-double Optimization::calculateFunc(double x)
+#include "optimization.h"
+
+const double INF = 1000000;
+
+double Optimization::calculateFunc(double x)  const
 {
 //    return alpha * sin(betta*x) + gamma * cos(betta*x);
-//    return sin(x); - некорректно, т.к. синус заметно медленнее растёт с ростом аргумента
-    return x*x; // корректно, т.к. здесь обратная ситуация
-// Если же брать за условие останова x[.]-x[..] < eps, то получим полный рандом
-// Всё это говорит о неэффективности метода полного перебора, разве что в конце еще раз искать
-// минимум среди найденных значений
+//    return sin(x);
+//    return x*x;
+    return cos(x) + sin(x);
 }
 
-QVector<double> Optimization::getFuncData(QVector<double> &x, double start, double end, int n)
+QVector<double> Optimization::getFuncData(QVector<double> &x, double start, double end, int n) const
 {
     double interval = (end - start) / (n-1);
     QVector<double> values(n);
@@ -41,11 +42,10 @@ int insertInOrder(double value, QVector<double>& array)
 
 void insertAtPos(double value, int pos, QVector<double>& array)
 {
-    if( array.begin()+pos > array.end() || array.begin()+pos < array.begin())
-        int a= 7;
     array.insert(array.begin()+pos, value);
 }
 
+// Inserts with neighbour items redefinition
 QVector<double>::iterator insertToR(double before, double value, double after, int pos, QVector<double>& array)
 {
     QVector<double>::iterator valIt = array.erase(array.begin() + pos - 1);
@@ -53,39 +53,51 @@ QVector<double>::iterator insertToR(double before, double value, double after, i
     return array.insert(valIt, value - before);
 }
 
-QPair<double, double> Optimization::bruteforceMethod(QVector<QPair<double, double>>& iterations, double start, double end, int maxIterCount, double eps)
+int findMax(QVector<double> array, double& maxValue)
 {
-    double globalMin = 10000000;
-    int iter = 0; double currentError = 1000000;
+    maxValue = 0;
+    int maxIndex = 0;
+    for (int i = 0; i < array.size(); i++)
+        if (array[i] > maxValue)
+        {
+            maxValue = array[i];
+            maxIndex = i;
+        }
+    return maxIndex;
+}
+
+QPair<double, double> Optimization::bruteforceMethod(QVector<QPair<double, double>>& iterations, double start, double end, int maxIterCount, double eps)  const
+{
+    // Initialization
+    QPair<double, double> globalMin(0, INF);
     QVector<double> x; QVector<double> y;
     x.push_back(start); x.push_back(end);
     y.push_back(calculateFunc(start)); y.push_back(calculateFunc(end));
     QVector<double> R;
     R.push_back(fabs(end - start));
-    double newPoint, newValue;
-    while (iter < maxIterCount && currentError > eps)
+
+    // Main work
+    for (int iter = 0; iter < maxIterCount; iter++)
     {
-        int maxIndex = 0;
         double maxValue = 0;
-        for (int i = 0; i < R.size(); i++)
-            if (R[i] > maxValue)
-            {
-                maxValue = R[i];
-                maxIndex = i;
-            }
-        currentError = fabs(y[maxIndex+1]-y[maxIndex]);
-        // Поправить
-//        if (currentError < eps)
-//            break;
-        newPoint = 0.5*(x[maxIndex]+x[maxIndex+1]);
-        newValue = calculateFunc(newPoint);
-        if (newValue < globalMin)
-            globalMin = newValue;
+        int maxIndex = findMax(R, maxValue);
+        // Isolates currentError variable
+        {
+            double currentError = fabs(x[maxIndex+1]-x[maxIndex]);
+            if (currentError < eps)
+                break;
+        }
+        double newPoint = 0.5*(x[maxIndex]+x[maxIndex+1]);
+        double newValue = calculateFunc(newPoint);
+        if (newValue < globalMin.second)
+        {
+            globalMin.first = newPoint;
+            globalMin.second = newValue;
+        }
         int pos = insertInOrder(newPoint, x);
         insertAtPos(newValue, pos, y);
-        QVector<double>::iterator tmpIt = insertToR(x[pos-1], newPoint, x[pos+1], pos, R);
+        insertToR(x[pos-1], newPoint, x[pos+1], pos, R);
         iterations.push_back(QPair<double, double>(newPoint, newValue));
-        iter++;
     }
-    return QPair<double, double>(newPoint, y[y.size()-1]);
+    return globalMin;
 }

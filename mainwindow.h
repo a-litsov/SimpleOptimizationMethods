@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "optimization.h"
 
 namespace Ui {
 class MainWindow;
@@ -13,7 +14,9 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void drawLine(QPair<double, double> iteration, int iterNum, bool isFinal);
+    void createGraph(const Optimization& optObj, int n , double eps, double startX, double endX, double startY, double endY);
+    void drawLine(QPair<double, double> iteration, double startY, int iterNum, bool isFinal, bool showIter, bool showX);
+    void showIterations(const QVector<QPair<double, double>>& iterations, const QPair<double, double>& min, double startY);
     ~MainWindow();
 
 private:
