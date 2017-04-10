@@ -10,8 +10,8 @@ double Optimization::calculateFunc(double x)  const
 {
 //    return alpha * sin(betta*x) + gamma * cos(betta*x);
 //    return sin(x);
-//    return x*x;
-    return cos(x) + sin(x);
+    return x*x;
+//    return cos(x) + sin(x);
 }
 
 QVector<double> Optimization::getFuncData(QVector<double> &x, double start, double end, int n) const
@@ -124,11 +124,16 @@ double Optimization::getM(const QVector<double>& x, const double& r) const
     return m;
 }
 
+double Optimization::calculateRPiavskii(double after, double before, double m) const
+{
+    return 0.5*m*(after-before) - (calculateFunc(after)+calculateFunc(before))/2;
+}
+
 QVector<double>::iterator Optimization::insertToRPiavskii(double before, double value, double after, int pos, double m, QVector<double>& array) const
 {
     QVector<double>::iterator valIt = array.erase(array.begin() + pos - 1);
-    valIt = array.insert(valIt, 0.5*m*(after-value) - (calculateFunc(after)+calculateFunc(value))/2); //after - value);
-    return array.insert(valIt, 0.5*m*(value-before) - (calculateFunc(value)+calculateFunc(before))/2); //value - before);
+    valIt = array.insert(valIt, calculateRPiavskii(after, value, m));
+    return array.insert(valIt, calculateRPiavskii(value, before, m));
 }
 
 QPair<double, double> Optimization::PiavskiiMethod(QVector<QPair<double, double>>& iterations, double start, double end, int maxIterCount, double eps, double r)  const
@@ -141,7 +146,7 @@ QPair<double, double> Optimization::PiavskiiMethod(QVector<QPair<double, double>
     y.push_back(calculateFunc(start)); y.push_back(calculateFunc(end));
     QVector<double> R;
     double m = getM(x, r);
-    R.push_back(0.5*m*(end-start)-(calculateFunc(end)+calculateFunc(start))/2);
+    R.push_back(calculateRPiavskii(end, start, m));
 
 
     // Main work
@@ -166,6 +171,59 @@ QPair<double, double> Optimization::PiavskiiMethod(QVector<QPair<double, double>
         insertAtPos(newValue, pos, y);
         m = getM(x, r);
         insertToRPiavskii(x[pos-1], newPoint, x[pos+1], pos, m, R);
+        iterations.push_back(QPair<double, double>(newPoint, newValue));
+    }
+    return globalMin;
+}
+
+double Optimization::calculateRStrongin(double after, double before, double m) const
+{
+    double afterValue = calculateFunc(after), beforeValue = calculateFunc(before);
+    return m*(after-before)+pow(afterValue - beforeValue, 2)/(m*(after-before)) - 2*(afterValue + beforeValue);
+}
+
+QVector<double>::iterator Optimization::insertToRStrongin(double before, double value, double after, int pos, double m, QVector<double>& array) const
+{
+    QVector<double>::iterator valIt = array.erase(array.begin() + pos - 1);
+    valIt = array.insert(valIt, calculateRStrongin(after, value, m));
+    return array.insert(valIt, calculateRStrongin(value, before, m));
+}
+
+QPair<double, double> Optimization::StronginMethod(QVector<QPair<double, double>>& iterations, double start, double end, int maxIterCount, double eps, double r)  const
+{
+    assert(r > 1);
+    // Initialization
+    QPair<double, double> globalMin(0, INF);
+    QVector<double> x; QVector<double> y;
+    x.push_back(start); x.push_back(end);
+    y.push_back(calculateFunc(start)); y.push_back(calculateFunc(end));
+    QVector<double> R;
+    double m = getM(x, r);
+    R.push_back(calculateRStrongin(end, start, m));
+
+
+    // Main work
+    for (int iter = 0; iter < maxIterCount; iter++)
+    {
+        double maxValue = 0;
+        int maxIndex = findMax(R, maxValue);
+        // Isolates currentError variable
+        {
+            double currentError = fabs(x[maxIndex+1]-x[maxIndex]);
+            if (currentError < eps)
+                break;
+        }
+        double newPoint = (x[maxIndex+1]+x[maxIndex])/2 - (calculateFunc(x[maxIndex+1]) - calculateFunc(x[maxIndex])) / (2 * m);
+        double newValue = calculateFunc(newPoint);
+        if (newValue < globalMin.second)
+        {
+            globalMin.first = newPoint;
+            globalMin.second = newValue;
+        }
+        int pos = insertInOrder(newPoint, x);
+        insertAtPos(newValue, pos, y);
+        m = getM(x, r);
+        insertToRStrongin(x[pos-1], newPoint, x[pos+1], pos, m, R);
         iterations.push_back(QPair<double, double>(newPoint, newValue));
     }
     return globalMin;

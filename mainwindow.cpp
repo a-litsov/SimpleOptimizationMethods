@@ -22,7 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     const double r = 2;
     QVector<QPair<double, double>> iterations;
 //    QPair<double, double> min = optObj.bruteforceMethod(iterations, startX, endX, iterCount, eps);
-    QPair<double, double> min = optObj.PiavskiiMethod(iterations, startX, endX, iterCount, eps, r);
+//    QPair<double, double> min = optObj.PiavskiiMethod(iterations, startX, endX, iterCount, eps, r);
+    QPair<double, double> min = optObj.StronginMethod(iterations, startX, endX, iterCount, eps, r);
 
     showIterations(iterations, min, startY);
 }
