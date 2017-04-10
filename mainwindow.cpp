@@ -14,13 +14,15 @@ MainWindow::MainWindow(QWidget *parent) :
     Optimization optObj;
     const int n = 150;
     const double startX = -5, endX = 5, startY = -2, endY = 2;
-    const double eps = 0.05;
+    const double eps = 0.01;
 
     createGraph(optObj, n, eps, startX, endX, startY, endY);
 
     const int iterCount = 10000000;
+    const double r = 2;
     QVector<QPair<double, double>> iterations;
-    QPair<double, double> min = optObj.bruteforceMethod(iterations, startX, endX, iterCount, eps);
+//    QPair<double, double> min = optObj.bruteforceMethod(iterations, startX, endX, iterCount, eps);
+    QPair<double, double> min = optObj.PiavskiiMethod(iterations, startX, endX, iterCount, eps, r);
 
     showIterations(iterations, min, startY);
 }
