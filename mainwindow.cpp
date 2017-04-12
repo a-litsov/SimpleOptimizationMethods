@@ -36,11 +36,9 @@ void MainWindow::getPlotData(double params[4], double& startX, double& endX)
 
 void MainWindow::setupUI()
 {
-    QRect rec = QApplication::desktop()->screenGeometry();
-    this->setGeometry(rec);
-
-    customPlot->setMinimumWidth(this->width());
-    customPlot->setMinimumHeight(this->height()-110);
+    this->setWindowState(Qt::WindowMaximized);
+//    customPlot->setMinimumWidth(this->width());
+//    customPlot->setMinimumHeight(this->height()-110);
 }
 
 void MainWindow::createGraph(const Optimization& optObj, int n, double startX, double endX, double startY, double endY)
